@@ -89,16 +89,16 @@ namespace TYS.AzureLibrary
         /// <param name="accountName"></param>
         /// <param name="accountKey"></param>
         /// <param name="containerName"></param>
-        /// <param name="fileName"></param>
+        /// <param name="blobName"></param>
         /// <param name="standardBlobTier"></param>
         /// <returns></returns>
-        public static async Task<bool> SetStandardBlobTierAsync(string accountName, string accountKey, string containerName, string fileName, StandardBlobTier standardBlobTier)
+        public static async Task<bool> SetStandardBlobTierAsync(string accountName, string accountKey, string containerName, string blobName, StandardBlobTier standardBlobTier)
         {
             // blobコンテナへの参照を取得する
             var container = GetContainerReference(accountName, accountKey, containerName);
 
             // コンテナからblobブロックの参照を取得する
-            CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(blobName);
 
             // 層変更
             await blockBlob.SetStandardBlobTierAsync(standardBlobTier);
@@ -112,15 +112,15 @@ namespace TYS.AzureLibrary
         /// <param name="accountName"></param>
         /// <param name="accountKey"></param>
         /// <param name="containerName"></param>
-        /// <param name="fileName"></param>
+        /// <param name="blobName"></param>
         /// <returns></returns>
-        public static async Task<BlobProperties> GetBlobPropertiesAsync(string accountName, string accountKey, string containerName, string fileName)
+        public static async Task<BlobProperties> GetBlobPropertiesAsync(string accountName, string accountKey, string containerName, string blobName)
         {
             // blobコンテナへの参照を取得する
             var container = GetContainerReference(accountName, accountKey, containerName);
 
             // コンテナからblobブロックの参照を取得する
-            CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(blobName);
 
             await blockBlob.FetchAttributesAsync();
 
