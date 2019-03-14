@@ -11,9 +11,9 @@ namespace TYS.AzureLibrary
     /// </summary>
     public class StorageConnectionSettings
     {
-        public static async Task<CloudStorageAccount> GetStorageAccount(string storageConnectiongString)
+        public static CloudStorageAccount GetStorageAccount(string storageConnectiongString)
         {
-            return await Task.FromResult(CloudStorageAccount.Parse(storageConnectiongString));
+            return CloudStorageAccount.Parse(storageConnectiongString);
         }
     }
 }
