@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TYS.AzureLibrary.Library
+namespace TYS.AzureLibrary
 {
+    /// <summary>
+    /// AzureStorageConnectionString から CloudStorageAccount を取得
+    /// </summary>
     public class StorageConnectionSettings
     {
         public static async Task<CloudStorageAccount> GetStorageAccount(string storageConnectiongString)
