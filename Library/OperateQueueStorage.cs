@@ -30,7 +30,7 @@ namespace TYS.AzureLibrary
             var queue = GetQueueReference(accountName, accountKey, queueName);
 
             // queueが存在しない場合作成する
-            queue.CreateIfNotExists();
+            await queue.CreateIfNotExistsAsync();
 
             // メッセージ作成
             CloudQueueMessage queueMessage = new CloudQueueMessage(message);
