@@ -222,5 +222,61 @@ namespace TYS.AzureLibrary
             // blobコンテナへの参照を取得する
             return blobClient.GetContainerReference(containerName);
         }
+
+
+        /// <summary>
+        /// Blob削除(File単位)
+        /// </summary>
+        /// <param name="storageAccount"></param>
+        /// <param name="containerName"></param>
+        /// <param name="blobFileName"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteBlobFileAsync(CloudStorageAccount storageAccount, string containerName, string blobFileName)
+        {
+            // blobコンテナへの参照を取得する
+            var container = GetContainerReference(storageAccount, containerName);
+
+            // コンテナからblobブロックの参照を取得する
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(blobFileName);
+
+            // Blobを削除
+            await blockBlob.DeleteIfExistsAsync();
+
+            return await Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// Blob削除(Directory単位)
+        /// </summary>
+        /// <param name="storageAccount"></param>
+        /// <param name="containerName"></param>
+        /// <param name="blobDirectoryName"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteBlobDirectoryAsync(CloudStorageAccount storageAccount, string containerName, string blobDirectoryName)
+        {
+            // blobコンテナへの参照を取得する
+            var container = GetContainerReference(storageAccount, containerName);
+            // コンテナ内から、blobDirectoryNameが含まれるBlobをリストアップする
+            // blobDirectoryNameはフォルダ部分のみの指定とする。
+            // 例：「folder/image.jpg」のフォルダごと削除 → 「folder」
+            BlobContinuationToken blobContinuationToken = null;
+            do
+            {
+                // blobDirectoryNameで前方一致したBlobを全て取得する
+                var resultSegment = await container.ListBlobsSegmentedAsync(blobDirectoryName, true, BlobListingDetails.Metadata, null, blobContinuationToken, null, null);
+                blobContinuationToken = resultSegment.ContinuationToken;
+
+                foreach (CloudBlob blob in resultSegment.Results)
+                {
+                    if (blob.GetType() == typeof(CloudBlob) || blob.GetType().BaseType == typeof(CloudBlob))
+                    {
+                        // Blobを削除
+                        await blob.DeleteIfExistsAsync();
+                    }
+                }
+            } while (blobContinuationToken != null);
+
+            return await Task.FromResult(true);
+        }
     }
 }
