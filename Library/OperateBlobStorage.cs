@@ -278,5 +278,90 @@ namespace TYS.AzureLibrary
 
             return await Task.FromResult(true);
         }
+
+		/// <summary>
+        /// テキストのアップロード
+        /// </summary>
+        /// <param name="storageAccount"></param>
+        /// <param name="containerName"></param>
+        /// <param name="blobName"></param>
+        /// <param name="uploadText"></param>
+        /// <param name="standardBlobTier"></param>
+        /// <param name="shouldBlobDelete"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// </remarks>
+        public static async Task<bool> UploadTextAsync(CloudStorageAccount storageAccount, string containerName, string blobName, string uploadText, StandardBlobTier standardBlobTier = StandardBlobTier.Unknown, bool shouldBlobDelete = false)
+        {
+            // blobコンテナへの参照を取得する
+            var container = GetContainerReference(storageAccount, containerName);
+
+            // コンテナが存在しない場合作成する
+            await container.CreateIfNotExistsAsync();
+
+            // コンテナからblobブロックの参照を取得する
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(blobName);
+
+            // 指定があれば既存のBlobを削除
+            if (shouldBlobDelete)
+            {
+                await blockBlob.DeleteIfExistsAsync();
+            }
+
+            // テキストをアップロードする
+            await blockBlob.UploadTextAsync(uploadText);
+
+            // 指定があれば層を設定
+            if (standardBlobTier != StandardBlobTier.Unknown)
+            {
+                await blockBlob.SetStandardBlobTierAsync(standardBlobTier);
+            }
+
+            return await Task.FromResult(true);
+        }
+
+		/// <summary>
+        /// テキストのダウンロード
+        /// </summary>
+        /// <param name="storageAccount"></param>
+        /// <param name="containerName"></param>
+        /// <param name="blobName"></param>
+        /// <returns></returns>
+        public static async Task<string> DownloadTextAsync(CloudStorageAccount storageAccount, string containerName, string blobName)
+        {
+            // blobコンテナへの参照を取得する
+            var container = GetContainerReference(storageAccount, containerName);
+
+            // コンテナからblobブロックの参照を取得する
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(blobName);
+
+            string downloadText = await blockBlob.DownloadTextAsync();
+
+            return await Task.FromResult(downloadText);
+        }
+
+		/// <summary>
+        /// 削除
+        /// </summary>
+        /// <param name="storageAccount"></param>
+        /// <param name="containerName"></param>
+        /// <param name="blobName"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// </remarks>
+        public static async Task<bool> DeleteAsync(CloudStorageAccount storageAccount, string containerName, string blobName)
+        {
+            // blobコンテナへの参照を取得する
+            var container = GetContainerReference(storageAccount, containerName);
+
+            // コンテナからblobブロックの参照を取得する
+            // フォルダ階層ありのアップロードを行う場合、blobNameを「folder/image.jpg」のようにする
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(blobName);
+
+            // ファイルを削除する
+            await blockBlob.DeleteAsync();
+
+            return await Task.FromResult(true);
+        }
     }
 }
