@@ -82,6 +82,30 @@ namespace TYS.AzureLibrary
         }
 
         /// <summary>
+        /// ダウンロード（ファイル）
+        /// </summary>
+        /// <param name="storageAccount"></param>
+        /// <param name="containerName"></param>
+        /// <param name="blobName"></param>
+        /// <param name="outputPath"></param>
+        /// <returns></returns>
+        public static async Task<bool> DownloadFileAsync(CloudStorageAccount storageAccount, string containerName, string blobName, string outputPath)
+        {
+            // blobコンテナへの参照を取得する
+            var container = GetContainerReference(storageAccount, containerName);
+
+            // コンテナからblobブロックの参照を取得する
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(blobName);
+
+            await blockBlob.DownloadToFileAsync(outputPath, FileMode.Create);
+
+            bool isDownload = false;
+            if (File.Exists(outputPath)) isDownload = true;
+
+            return await Task.FromResult(isDownload);
+        }
+
+        /// <summary>
         /// 層変更
         /// </summary>
         /// <param name="storageAccount"></param>
